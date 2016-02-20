@@ -49,13 +49,13 @@ struct crc_failed_t : public boost::exception, public std::exception {
 ///////////////////////////////////////////////////////////////////////////
 
 // depending on the options, CRC32 will be either computed using the file name, or by using the data withing the file.
-boost::int32_t file_crc32(const file_cmp_options_t& options, const fs::path& filePath) {
+boost::int32_t file_crc32(const file_cmp_options_t& options, const fs::path& file_path) {
 	boost::crc_32_type  result;
 	if (options.file_name && !options.file_data) {
-		std::string fileName = filePath.filename().string();
+		std::string fileName = file_path.filename().string();
 		result.process_bytes(fileName.c_str(), fileName.size());
 	} else {
-		std::ifstream	input(filePath.c_str(), std::ios::binary);
+		std::ifstream	input(file_path.c_str(), std::ios::binary);
 		if (input) {
 			char  buffer[ buffer_size ];
 	    input.read( buffer, buffer_size );
@@ -90,8 +90,8 @@ bool file_compare(const file_cmp_options_t& options, const fs::path& left_path, 
 
 // find out if the file is duplicated and store the data as needed.
 void check_equals(work_package_t &work_package, const fs::path& path) {
-	auto 	entryCRC = file_crc32(work_package.file_cmp_options, path);
-	auto 	range = work_package.crc32_to_path.equal_range(entryCRC);
+	auto 	crc32 = file_crc32(work_package.file_cmp_options, path);
+	auto 	range = work_package.crc32_to_path.equal_range(crc32);
 	bool	need_to_add = true;
 
 	for (auto it = range.first; it != range.second; ++it) {
@@ -106,7 +106,7 @@ void check_equals(work_package_t &work_package, const fs::path& path) {
 		}
 	}
 	if (need_to_add) {
-		work_package.crc32_to_path.insert(std::make_pair(entryCRC, path));
+		work_package.crc32_to_path.insert(std::make_pair(crc32, path));
 	}
 }
 
