@@ -139,9 +139,9 @@ void reduce_result(work_package_t& work_package) {
 			names.insert(path.filename().string());
 		}
 
-		auto joinedNames = "\t" + boost::algorithm::join(names, " == ");
-		auto joinedDirectories = boost::algorithm::join(directories, "\n");
-		work_package.reduce[joinedDirectories].insert(joinedNames);
+		auto joined_names = "\t" + boost::algorithm::join(names, " == ");
+		auto joined_directories = boost::algorithm::join(directories, "\n");
+		work_package.reduce[joined_directories].insert(joined_names);
 	}
 }
 
